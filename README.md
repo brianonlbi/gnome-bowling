@@ -58,6 +58,9 @@ between the legs.
 Controls: mouse or touch for everything, or keyboard — `←` `→` move, `Space`/`Enter`
 select, `M` mute, `Esc` menu, `E`/`H` pick difficulty on the title screen.
 
+Bowl three strikes in a row (a **turkey**) and Mrs. Claus serves dinner. Tap to
+skip it. A perfect 300 gets something bigger.
+
 Scoring is standard ten-pin (strikes, spares, three balls in the 10th). Best
 score per difficulty is remembered in the browser.
 
