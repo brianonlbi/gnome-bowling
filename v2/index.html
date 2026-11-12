@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="description" content="Gnome Bowling 2.0 — Santa bowls, the gnomes are the pins. Now in 3D.">
+<meta name="theme-color" content="#0a1030">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gnome Bowling">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Gnome Bowling 2.0</title>
+<style>
+  html,body{margin:0;height:100%;background:#0a1030;overflow:hidden;overscroll-behavior:none;-webkit-touch-callout:none}
+  #wrap{position:fixed;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center}
+  #stage{position:relative;flex:none;background:#0a1030}
+  #stage canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block;touch-action:none;outline:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  #hud{cursor:pointer}
+  #nojs{color:#fff;font:16px sans-serif;text-align:center;padding:40px}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage"><canvas id="gl"></canvas><canvas id="hud" tabindex="0" aria-label="Gnome Bowling game"></canvas></div></div>
+<noscript><div id="nojs">Gnome Bowling needs JavaScript turned on.</div></noscript>
+<script src="game.js"></script>
+</body>
+</html>

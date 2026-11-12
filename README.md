@@ -8,6 +8,12 @@ file, `index.html` — plain JavaScript and canvas, no build step, no downloads,
 no external images or sounds (the art is drawn in code and the audio is
 synthesized).
 
+## Version 2.0 (3D)
+
+A 3D rebuild with real physics lives in [`v2/`](v2/) and is playable at
+**https://brianonlbi.github.io/gnome-bowling/v2/**. This page describes 1.0, which
+is unchanged. See [`v2/README.md`](v2/README.md).
+
 ## Share it as a link, not a file
 
 Emailing `index.html` works badly: mail and antivirus programs flag any HTML

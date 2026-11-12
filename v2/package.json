@@ -1,0 +1,16 @@
+{
+  "name": "gnome-bowling-v2",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Gnome Bowling 2.0 - real-time 3D build",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --minify --format=iife --target=es2019 --outfile=game.js",
+    "dev": "esbuild src/main.js --bundle --format=iife --target=es2019 --sourcemap --outfile=game.js --watch"
+  },
+  "devDependencies": {
+    "@dimforge/rapier3d-compat": "^0.21.0",
+    "esbuild": "^0.28.2",
+    "three": "^0.187.0"
+  },
+  "type": "module"
+}
