@@ -2,15 +2,15 @@
 import RAPIER from '@dimforge/rapier3d-compat';
 
 // World layout. Units are metres-ish; +x right, +y up, -z down the lane (foul line at z = 0).
-const HEAD_Z = -5.5;
+const HEAD_Z = -11;
 export const C = {
   LANE_HALF: 0.8, GUT_W: 0.3, GUT_D: 0.09, RAIL_W: 0.2, RAIL_H: 0.12,
   APPROACH: 3.2, HEAD_Z, PIN_DX: 0.44, ROW_DZ: 0.381, DECK_END: HEAD_Z - 1.6, PIT_END: HEAD_Z - 2.5, KICK_Z: HEAD_Z + 0.55, KICK_H: 0.75,
-  BALL_R: 0.15, PIN_H: 0.62, SANTA_Z: 0.95, SANTA_MAX: 0.62, AIM_MAX: 0.16,
-  SPEED_MIN: 3.0, SPEED_MAX: 7.0, KID_MIN: 2.7, KID_MAX: 3.3
+  BALL_R: 0.15, PIN_H: 0.62, SANTA_Z: 0.95, SANTA_MAX: 0.62, AIM_MAX: 0.082,
+  SPEED_MIN: 4.2, SPEED_MAX: 9.4, KID_MIN: 3.0, KID_MAX: 3.6
 };
 // Tuned with `node tune.mjs` so a good pocket hit strikes but a sloppy one does not.
-export const TUNE = { ballMass: 8, pinMass: 1.7, pinRest: 0.45, pinFric: 0.4, laneFric: 0.3, baseR: 0.078, angDamp: 0.25, linDamp: 0.05, downCos: 0.8 };
+export const TUNE = { ballMass: 8, pinMass: 2.0, pinRest: 0.42, pinFric: 0.4, laneFric: 0.3, baseR: 0.083, angDamp: 0.25, linDamp: 0.05, downCos: 0.8 };
 
 export function initPhysics() { return RAPIER.init(); }
 export function pinSpots() {
@@ -87,7 +87,7 @@ export class Sim {
     const b = this.ball; this.time += h;
     if (b && !b.done) {
       b.t += h; const t = b.body.translation(), v = b.body.linvel();
-      if (b.kid && !b.gutter && t.z > C.HEAD_Z + 0.5) b.body.applyImpulse({ x: Math.sin(b.t * 2.3 + b.wob) * 0.035, y: 0, z: 0 }, true);
+      if (b.kid && !b.gutter && t.z > C.HEAD_Z + 0.5) b.body.applyImpulse({ x: Math.sin(b.t * 2.3 + b.wob) * 0.016, y: 0, z: 0 }, true);
       if (!b.gutter && t.y < C.BALL_R - 0.045 && t.z > C.DECK_END) { b.gutter = true; if (this.onGutter) this.onGutter(); }
       const sp = Math.hypot(v.x, v.z);
       if (sp < 1.2 && t.z > C.DECK_END) b.body.applyImpulse({ x: 0, y: 0, z: -0.12 }, true);  // never strand a slow ball

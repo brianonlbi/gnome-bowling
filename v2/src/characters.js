@@ -355,6 +355,6 @@ export function buildAimArrow() {
   parts.forEach(p => { const m = new THREE.Mesh(p[0], y); m.position.y = p[1]; if (p[1] < 0.3) m.rotation.x = Math.PI; root.add(m); const ol = new THREE.Mesh(p[0], o); ol.position.copy(m.position); ol.rotation.copy(m.rotation); ol.scale.set(1.22, 1.07, 1.22); root.add(ol); });
   const ring = new THREE.Mesh(G('Torus', 0.17, 0.028, 8, 28), y); ring.rotation.x = Math.PI / 2;
   const ring2 = new THREE.Mesh(G('Torus', 0.17, 0.05, 8, 28), new THREE.MeshBasicMaterial({ color: 0x5a2a00, toneMapped: false })); ring2.rotation.x = Math.PI / 2; ring2.position.y = -0.006;
-  const dots = new THREE.InstancedMesh(new THREE.CircleGeometry(0.04, 10), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.8, toneMapped: false, depthWrite: false }), 22); dots.frustumCulled = false;
+  const dots = new THREE.InstancedMesh(new THREE.CircleGeometry(0.04, 10), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.8, toneMapped: false, depthWrite: false }), 40); dots.frustumCulled = false;
   return { root, ring: grp(0, 0, 0, ring2, ring), dots, mats: [y] };
 }

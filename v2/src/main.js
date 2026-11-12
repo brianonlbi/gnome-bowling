@@ -36,7 +36,7 @@ const HANDX = 0.39;
 let renderer, scene, camera, world, sim, sparks, puffs;
 let santaM, ballMesh, mrs, table, chair, turkey, trophy, arrow, sleigh, star300, discoA, discoB;
 const gnomes = [], cr = {};
-const cam = { pos: new V3(0, 3.8, 8.2), look: new V3(0, -0.82, -11.8), fov: 32 };
+const cam = { pos: new V3(0, 3.6, 12), look: new V3(0, -0.19, -18), fov: 24 };
 const camT = { pos: new V3(), look: new V3(), fov: 32 };
 let sideways = false, lowQ = TOUCH, paused = false, stageW = 960, stageH = 640, gcamK = 0;
 const gcam = new THREE.PerspectiveCamera(34, 1.5, 0.1, 300);
@@ -64,7 +64,7 @@ function santaHead() { return new V3(santaM.root.position.x, 1.75, santaM.root.p
 const WHITE3 = [1, 1, 1];
 function puff(x, y, z, n, s) { for (let i = 0; i < n; i++) puffs.emit({ x: x + rand(-0.06, 0.06), y: y + rand(0, 0.05), z: z + rand(-0.06, 0.06), vx: rand(-0.7, 0.7), vy: rand(0.2, 1.1), vz: rand(-0.7, 0.7), g: 1.2, life: rand(0.35, 0.75), size: (s || 1) * rand(0.07, 0.14), size1: (s || 1) * 0.02, color: WHITE3, alpha: 0.9, drag: 1.5 }); }
 const CONF = ['#e63946', '#2a9d4a', '#ffd23f', '#ffffff', '#3a86ff'].map(hex3);
-function confetti(n, cx, cz) { for (let i = 0; i < n; i++) puffs.emit({ x: (cx || 0) + rand(-2.4, 2.4), y: rand(2.2, 4.2), z: (cz == null ? -3 : cz) + rand(-3.5, 3.5), vx: rand(-1, 1), vy: rand(0, 2.2), vz: rand(-1, 1), g: 2.2, life: rand(1.6, 2.8), size: rand(0.05, 0.1), color: pick(CONF), drag: 0.9, floor: 0 }); }
+function confetti(n, cx, cz, spread) { const sp = spread || 3.5; for (let i = 0; i < n; i++) puffs.emit({ x: (cx || 0) + rand(-2.4, 2.4), y: rand(2.2, 4.2), z: (cz == null ? -3 : cz) + rand(-sp, sp), vx: rand(-1, 1), vy: rand(0, 2.2), vz: rand(-1, 1), g: 2.2, life: rand(1.6, 2.8), size: rand(0.05, 0.1), color: pick(CONF), drag: 0.9, floor: 0 }); }
 const FW = ['#ff4d6d', '#ffd23f', '#7dffb0', '#6fc3ff', '#ff9f1c', '#e0aaff', '#ffffff'].map(hex3);
 function firework(x, y, z, quiet, col) {
   col = col || pick(FW); const n = lowQ ? 50 : 90;
@@ -188,7 +188,7 @@ function syncGnomes(dt) {
     const a = g.act;
     if (a) {
       a.t += dt;
-      if (a.type === 'snowball' && !a.fired && a.t > a.dur * 0.55 && phase !== 'title') { a.fired = true; throwSnowball(g.m.root.position.clone().add(new V3(0.15, 0.6, 0.1)), new V3(santaM.root.position.x + rand(-0.1, 0.1), rand(0.7, 1.0), C.SANTA_Z + 0.25), 0.6, 1.2, hitSanta); }
+      if (a.type === 'snowball' && !a.fired && a.t > a.dur * 0.55 && phase !== 'title') { a.fired = true; throwSnowball(g.m.root.position.clone().add(new V3(0.15, 0.6, 0.1)), new V3(santaM.root.position.x + rand(-0.1, 0.1), rand(0.7, 1.0), C.SANTA_Z + 0.25), 0.95, 2.2, hitSanta); }
       if (a.type === 'sleep' && a.t > 0 && Math.floor(a.t / 1.6) !== Math.floor((a.t - dt) / 1.6)) { floatText(gnomeHead(g), 'z', { dur: 1.5, size: 14 + Math.random() * 8, color: '#cfe6ff' }); if (Math.random() < 0.15) Snd.snore(); }
       if (a.type === 'laugh' && a.t > 0 && Math.random() < dt * 1.2) floatText(gnomeHead(g), pick(['HA', 'HEE', 'HO']), { dur: 0.9, size: 13 });
       if (a.t > a.dur) g.act = null;
@@ -224,7 +224,7 @@ function ambientEvent() {
   if (!cr.bunny.act) o.push('bunny'); if (!cr.bird.on) o.push('bird'); if (!cr.flyer.on && phase !== 'perfect') o.push('flyer');
   if (!cr.snowman.act) o.push('snowman', 'snowhead'); if (!cr.rr.act) o.push('honk'); if (!cr.rl.act && !cr.rr.act) o.push('rdance'); o.push('shoot');
   const e = pick(o);
-  if (e === 'penguin') { Object.assign(cr.penguin, { on: true, t: 0, dur: 2.8, dir: Math.random() < 0.5 ? 1 : -1, z: rand(-3.4, -1.2) }); Snd.whee(); }
+  if (e === 'penguin') { Object.assign(cr.penguin, { on: true, t: 0, dur: 2.8, dir: Math.random() < 0.5 ? 1 : -1, z: rand(-8.5, -2) }); Snd.whee(); }
   else if (e === 'bunny') { cr.bunny.act = 'pop'; cr.bunny.at = 0; cr.bunny.threw = false; }
   else if (e === 'bird') { cr.bird.on = true; cr.bird.t = 0; cr.bird.ch = false; }
   else if (e === 'flyer') { Object.assign(cr.flyer, { on: true, t: 0, dur: 9, dir: Math.random() < 0.5 ? 1 : -1 }); }
@@ -260,7 +260,7 @@ function updateCritters(dt) {
   if (b.act) {
     b.at += dt; const up = smooth(seg(b.at, 0, 0.4)) - smooth(seg(b.at, 2.6, 3));
     b.m.b.position.y = -0.62 + up * 0.72; b.m.head.rotation.y = Math.sin(b.at * 4) * 0.5; b.m.ball.visible = b.at > 0.7 && b.at < 1.3;
-    if (b.at > 1.3 && !b.threw) { b.threw = true; throwSnowball(b.m.root.position.clone().add(new V3(0.16, 0.5, 0)), reindeerHeadPos(cr.rl).add(new V3(0, -0.2, 0)), 0.5, 0.8, () => { Snd.splat(); cr.rl.act = 'hit'; cr.rl.at = 0; const h = reindeerHeadPos(cr.rl); puff(h.x, h.y - 0.2, h.z, 8); say(h, 'Hey!', 1.2); }); }
+    if (b.at > 1.3 && !b.threw) { b.threw = true; throwSnowball(b.m.root.position.clone().add(new V3(0.16, 0.5, 0)), reindeerHeadPos(cr.rl).add(new V3(0, -0.2, 0)), 0.85, 1.8, () => { Snd.splat(); cr.rl.act = 'hit'; cr.rl.at = 0; const h = reindeerHeadPos(cr.rl); puff(h.x, h.y - 0.2, h.z, 8); say(h, 'Hey!', 1.2); }); }
     if (b.at > 3) b.act = null;
   } else b.m.b.position.y = -0.62;
   // penguin belly-slide across the lane
@@ -421,7 +421,7 @@ function updateTurkey(dt) {
 
 function updatePerfect(dt) {
   const t = pt, fo = 1 - seg(t, 23, 24);
-  if (once('a', 0)) { Snd.glory(); Snd.boom(); confetti(160, 0, -2); santa.tx = 0; santa.mode = 'cheer'; star300.visible = true; star300.geometry.setDrawRange(0, 0); for (let i = 0; i < 6; i++) firework(rand(-9, 9), rand(5, 9), rand(-14, -4), true); }
+  if (once('a', 0)) { Snd.glory(); Snd.boom(); confetti(200, 0, -5.4, 6); santa.tx = 0; santa.mode = 'cheer'; star300.visible = true; star300.geometry.setDrawRange(0, 0); for (let i = 0; i < 6; i++) firework(rand(-9, 9), rand(5, 9), rand(-16, -2), true); }
   if (once('b', 1.6)) { gnomes.forEach(g => { if (g.alive && g.pin && g.pin.body) { const p = g.pin.body.translation(); puff(p.x, 0.2, p.z, 5); } }); newRack(true); }
   if (once('c', 3.4)) { startAntic('bow', standing(), 5.4); say(new V3(0, 1.3, C.HEAD_Z - 0.5), 'WE’RE NOT WORTHY!', 2.6); Snd.fanfare(); }
   if (once('c2', 6.2)) say(new V3(0, 1.3, C.HEAD_Z - 0.5), 'ALL HAIL SANTA!', 2.4);
@@ -430,10 +430,10 @@ function updatePerfect(dt) {
   if (once('e2', 11)) Snd.jig(); if (once('e3', 13)) Snd.jig(); if (once('f', 6)) Snd.hoho();
   if (once('g', 14.2)) cut.rk = 0;
   if (t > 14.2 && cut.rk < 10 && t > 14.2 + cut.rk * 0.38) { const S = standing().filter(g => !g.rocket); if (S.length) { const g = pick(S); g.rocket = true; g.act = null; g.rv = 1; g.rz = 0; g.rTop = rand(5, 8); if (g.pin && g.pin.body) { sim.world.removeRigidBody(g.pin.body); g.pin.body = null; g.pin.down = true; } g.m.root.quaternion.identity(); Snd.whistle(); } cut.rk++; }
-  if (once('h', 19.2)) { Snd.glory(); confetti(160, 0, -2); say(santaHead(), 'HO HO HO! Merry Christmas!', 3); Snd.hoho(); }
-  cut.n -= dt; if (cut.n <= 0) { cut.n = rand(0.2, 0.45); const a = Math.random() * TAU, d = rand(3, 11); firework(Math.cos(a) * d, rand(3.5, 8), -3 + Math.sin(a) * d, Math.random() < 0.45); }
+  if (once('h', 19.2)) { Snd.glory(); confetti(200, 0, -5.4, 6); say(santaHead(), 'HO HO HO! Merry Christmas!', 3); Snd.hoho(); }
+  cut.n -= dt; if (cut.n <= 0) { cut.n = rand(0.2, 0.45); const a = Math.random() * TAU, d = rand(3, 11); firework(Math.cos(a) * d, rand(3.5, 8), -5.4 + Math.sin(a) * d, Math.random() < 0.45); }
   if (Math.floor(t / 1.8) !== Math.floor((t - dt) / 1.8)) { cr.rl.act = cr.rr.act = 'dance'; cr.rl.at = cr.rr.at = 0; }
-  if (Math.floor(t / 3.4) !== Math.floor((t - dt) / 3.4)) { if (!cr.penguin.on) Object.assign(cr.penguin, { on: true, t: 0, dur: 2.4, dir: Math.random() < 0.5 ? 1 : -1, z: rand(-3.4, -1.2) }); if (!cr.snowman.act) { cr.snowman.act = 'head'; cr.snowman.at = 0; } confetti(40, 0, -2); }
+  if (Math.floor(t / 3.4) !== Math.floor((t - dt) / 3.4)) { if (!cr.penguin.on) Object.assign(cr.penguin, { on: true, t: 0, dur: 2.4, dir: Math.random() < 0.5 ? 1 : -1, z: rand(-8.5, -2) }); if (!cr.snowman.act) { cr.snowman.act = 'head'; cr.snowman.at = 0; } confetti(60, 0, -5.4, 6); }
   // disco lane + lights
   const hue = (time * 0.7) % 1, k = smooth(seg(t, 0.5, 2)) * fo;
   world.iceMat.emissive.setHSL(hue, 1, 0.5); world.iceMat.emissiveIntensity = 0.75 * k; discoA.color.setHSL((hue + 0.33) % 1, 1, 0.6); discoB.color.setHSL((hue + 0.66) % 1, 1, 0.6); discoA.intensity = discoB.intensity = 105 * k;
@@ -445,7 +445,7 @@ function updatePerfect(dt) {
   // sleigh fly-bys
   let sv = false; if (sleigh.banner) sleigh.banner.visible = true;
   const fly = (u, dir, drop) => {
-    sv = true; const a = lerp(-1.25, 1.25, u) * dir, R = 12; sleigh.root.scale.setScalar(1); sleigh.root.position.set(Math.sin(a) * R, 4.6 + Math.sin(u * 7) * 0.7, -3 - Math.cos(a) * R * 0.75);
+    sv = true; const a = lerp(-1.25, 1.25, u) * dir, R = 12; sleigh.root.scale.setScalar(1); sleigh.root.position.set(Math.sin(a) * R, 4.6 + Math.sin(u * 7) * 0.7, -5.4 - Math.cos(a) * R * 0.75);
     sleigh.root.rotation.set(0, -a * 0.75 + (dir > 0 ? 0 : Math.PI), Math.sin(u * 7) * 0.08); gallop();
     const p = sleigh.root.position; if (Math.random() < 0.8) sparks.emit({ x: p.x + rand(-0.4, 0.4), y: p.y + rand(0, 0.5), z: p.z + rand(-0.4, 0.4), vy: rand(-0.6, 0), g: 0.3, life: rand(0.6, 1.2), size: rand(0.08, 0.16), size1: 0.02, color: pick([FW[1], WHITE3]) });
     if (drop && Math.random() < dt * 10) puffs.emit({ x: p.x + rand(-0.4, 0.4), y: p.y, z: p.z + rand(-0.4, 0.4), vx: rand(-0.5, 0.5), vz: rand(-0.5, 0.5), g: 5, life: 3, size: rand(0.16, 0.26), color: pick(CONF), floor: GROUND });
@@ -528,19 +528,19 @@ window.addEventListener('keyup', e => { keys[e.key] = false; });
 function updateCamera(dt) {
   const T = camT; let rate = 3.2;
   if (phase === 'debug') { camera.position.copy(cam.pos); camera.lookAt(cam.look); camera.fov = cam.fov; camera.updateProjectionMatrix(); return; }
-  const main = () => { T.pos.set(santa.x * 0.22, 3.8, 8.2); T.look.set(santa.x * 0.08, -0.82, -11.8); T.fov = 32; };
+  const main = () => { T.pos.set(santa.x * 0.22, 3.6, 12); T.look.set(santa.x * 0.08, -0.19, -18); T.fov = 24; };
   main();
-  if (phase === 'title') { const a = Math.sin(time * 0.17) * 0.95; T.pos.set(Math.sin(a) * 9.5, 2.5 + Math.sin(time * 0.23) * 0.5, -2.6 + Math.cos(a) * 9.8); T.look.set(0, 0.9, -3.4); T.fov = 40; rate = 1.4; }
+  if (phase === 'title') { const a = Math.sin(time * 0.17) * 0.95; T.pos.set(Math.sin(a) * 11.5, 2.7 + Math.sin(time * 0.23) * 0.5, -5 + Math.cos(a) * 12.5); T.look.set(0, 0.9, -6); T.fov = 42; rate = 1.4; }
   else if (phase === 'roll' || phase === 'settle') {
     const b = sim.ball; let bz = C.DECK_END, bx = 0; if (b && !b.done) { const p = b.body.translation(); bz = p.z; bx = p.x; }
-    const k = smooth(clamp(-bz / 2.6, 0, 1));
-    T.pos.set(bx * 0.3, lerp(3.8, 1.55, k), Math.max(C.HEAD_Z + 3.0, bz + lerp(8.2, 3.1, k))); T.look.set(bx * 0.15, lerp(-0.82, 0.3, k), lerp(-11.8, C.HEAD_Z - 0.8, k)); T.fov = lerp(32, 42, k); rate = 5;
+    const k = smooth(clamp(-bz / 4.5, 0, 1));
+    T.pos.set(bx * 0.3, lerp(3.6, 1.55, k), Math.max(C.HEAD_Z + 3.0, bz + lerp(12, 3.3, k))); T.look.set(bx * 0.15, lerp(-0.19, 0.3, k), lerp(-18, C.HEAD_Z - 0.8, k)); T.fov = lerp(24, 42, k); rate = 5;
     if (phase === 'settle') { T.pos.set(0.5, 1.9, C.HEAD_Z + 3.5); T.look.set(0, 0.3, C.HEAD_Z - 0.8); T.fov = 42; rate = 2; }
   }
-  else if (phase === 'react' && pt < 1.35) { T.pos.set(0, 2.3, 0.1); T.look.set(0, 0.55, C.HEAD_Z + 0.2); T.fov = 46; rate = 3; }
+  else if (phase === 'react' && pt < 1.35) { T.pos.set(0, 2.3, C.HEAD_Z + 6.3); T.look.set(0, 0.55, C.HEAD_Z + 0.2); T.fov = 46; rate = 3; }
   else if (phase === 'turkey') { const k = 1 - smooth(seg(pt, 12.5, 13.5)); if (k > 0) { T.pos.set(lerp(T.pos.x, 1.35, k), lerp(T.pos.y, 1.5, k), lerp(T.pos.z, -3.5, k)); T.look.set(lerp(T.look.x, -0.35, k), lerp(T.look.y, 0.85, k), lerp(T.look.z, 0.7, k)); T.fov = lerp(32, 40, k); } rate = 2.6; }
-  else if (phase === 'perfect') { const a = pt * 0.27, k = 1 - smooth(seg(pt, 23, 24)); if (k > 0) { T.pos.set(Math.sin(a) * 6.6, 2.3 + Math.sin(pt * 0.4) * 0.5, -2.6 + Math.cos(a) * 6.6); T.look.set(0, 1.25, -2.6); T.fov = 52; } rate = 1.8; }
-  else if (phase === 'gameover') { const a = Math.sin(time * 0.2) * 0.5; T.pos.set(Math.sin(a) * 9, 3.2, -1 + Math.cos(a) * 9); T.look.set(0, 0.6, -3); T.fov = 36; rate = 1.2; }
+  else if (phase === 'perfect') { const a = pt * 0.27, k = 1 - smooth(seg(pt, 23, 24)); if (k > 0) { T.pos.set(Math.sin(a) * 9.6, 2.5 + Math.sin(pt * 0.4) * 0.5, -5.4 + Math.cos(a) * 9.6); T.look.set(0, 1.25, -5.4); T.fov = 52; } rate = 1.8; }
+  else if (phase === 'gameover') { const a = Math.sin(time * 0.2) * 0.5; T.pos.set(Math.sin(a) * 11, 3.4, -3 + Math.cos(a) * 12); T.look.set(0, 0.6, -5.5); T.fov = 38; rate = 1.2; }
   const k = 1 - Math.exp(-rate * dt); cam.pos.lerp(T.pos, k); cam.look.lerp(T.look, k); cam.fov += (T.fov - cam.fov) * k;
   camera.position.copy(cam.pos); camera.lookAt(cam.look);
   const f = camera.aspect < 1.5 ? 2 * Math.atan(Math.tan(cam.fov * Math.PI / 360) * 1.5 / camera.aspect) * 180 / Math.PI : cam.fov;
@@ -555,7 +555,7 @@ function updateArrow() {
   const D = 0.45 - C.HEAD_Z, tx = clamp(santa.x + shot.aim * C.AIM_MAX * D, -1.25, 1.25), act = phase === 'aim';
   arrow.root.position.set(tx, 0.92 + (act ? Math.sin(time * 9) * 0.05 : 0), C.HEAD_Z - 0.55); arrow.root.rotation.y = time * 2;
   arrow.ring.position.set(tx, 0.012, C.HEAD_Z + 0.42); arrow.mats[0].color.setHex(act ? 0xffd23f : 0xff9f1c);
-  if (arrow.dots.visible) { for (let i = 0; i < 22; i++) { const u = (i + 0.5) / 22; _dm.position.set(lerp(santa.x, tx, u), 0.008, lerp(0.1, C.HEAD_Z + 0.6, u)); _dm.rotation.set(-Math.PI / 2, 0, 0); _dm.updateMatrix(); arrow.dots.setMatrixAt(i, _dm.matrix); } arrow.dots.instanceMatrix.needsUpdate = true; }
+  if (arrow.dots.visible) { for (let i = 0; i < 40; i++) { const u = (i + 0.5) / 40; _dm.position.set(lerp(santa.x, tx, u), 0.008, lerp(0.1, C.HEAD_Z + 0.6, u)); _dm.rotation.set(-Math.PI / 2, 0, 0); _dm.updateMatrix(); arrow.dots.setMatrixAt(i, _dm.matrix); } arrow.dots.instanceMatrix.needsUpdate = true; }
 }
 
 // ───────────────────────── update ─────────────────────────
@@ -590,7 +590,7 @@ function update(dt) {
     case 'react': if (pt > 2.5) { if (pendingCut) startCut(pendingCut); else afterReact(); } break;
     case 'turkey': updateTurkey(dt); break;
     case 'perfect': updatePerfect(dt); break;
-    case 'gameover': if (totalScore() === 300 && Math.random() < dt * 2.2) { const a = Math.random() * TAU, d = rand(7, 16); firework(Math.cos(a) * d, rand(5, 11), -3 + Math.sin(a) * d, true); } break;
+    case 'gameover': if (totalScore() === 300 && Math.random() < dt * 2.2) { const a = Math.random() * TAU, d = rand(7, 16); firework(Math.cos(a) * d, rand(5, 11), -5.4 + Math.sin(a) * d, true); } break;
     case 'sweep':
       if (!sweepDone) gnomes.forEach(g => { if (g.alive && g.pin && (g.pin.down || sweepFull)) g.shrink = Math.max(0, 1 - pt / 0.35); });
       if (pt > 0.4 && !sweepDone) { sweepDone = true; if (sweepFull) newRack(true); else { sim.tidy(); gnomes.forEach(g => { if (g.alive && g.pin && g.pin.gone) { g.alive = false; g.m.root.visible = false; g.m.stars.visible = false; } }); } }
@@ -640,8 +640,8 @@ async function boot() {
   sparks = new Particles(lowQ ? 1500 : 3500, true); puffs = new Particles(lowQ ? 900 : 1800, false); scene.add(sparks.points, puffs.points);
   pinSpots().forEach((s, i) => { const m = CH.buildGnome(HATS[i], COATS[(i * 3 + 1) % 10], (i % 2 ? 1 : -1) * rand(0.03, 0.08)); scene.add(m.root, m.stars); gnomes.push({ m, pin: null, idx: i, seed: Math.random() * 10, act: null, alive: true, shrink: 1, dropY: 0, dropV: 0, landed: true, squash: 0, rocket: false, rz: 0, rv: 0 }); });
   santaM = CH.buildSanta(); scene.add(santaM.root); ballMesh = CH.buildBall();
-  cr.rl = { m: CH.buildReindeer(false, 0xe63946), act: null, at: 0, seed: 1, flip: false }; cr.rl.m.root.position.set(-2.35, GROUND, C.HEAD_Z + 1.9); cr.rl.m.root.rotation.y = -0.3; scene.add(cr.rl.m.root);
-  cr.rr = { m: CH.buildReindeer(true, 0x2a9d4a), act: null, at: 0, seed: 4, flip: true }; cr.rr.m.root.position.set(2.35, GROUND, C.HEAD_Z + 2.2); cr.rr.m.root.rotation.y = Math.PI + 0.3; scene.add(cr.rr.m.root);
+  cr.rl = { m: CH.buildReindeer(false, 0xe63946), act: null, at: 0, seed: 1, flip: false }; cr.rl.m.root.position.set(-2.25, GROUND, C.HEAD_Z + 1.9); cr.rl.m.root.rotation.y = -0.3; scene.add(cr.rl.m.root);
+  cr.rr = { m: CH.buildReindeer(true, 0x2a9d4a), act: null, at: 0, seed: 4, flip: true }; cr.rr.m.root.position.set(2.25, GROUND, C.HEAD_Z + 2.2); cr.rr.m.root.rotation.y = Math.PI + 0.3; scene.add(cr.rr.m.root);
   cr.snowman = { m: CH.buildSnowman(), act: null, at: 0 }; cr.snowman.m.root.position.set(2.45, GROUND, C.HEAD_Z - 0.9); cr.snowman.m.root.rotation.y = -0.45; scene.add(cr.snowman.m.root);
   cr.bunny = { m: CH.buildBunny(), act: null, at: 0 }; cr.bunny.m.root.position.set(-2.5, GROUND, 0.4); cr.bunny.m.root.rotation.y = 0.5; scene.add(cr.bunny.m.root);
   cr.penguin = { m: CH.buildPenguin(), on: false, t: 0 }; scene.add(cr.penguin.m.root);
@@ -658,7 +658,7 @@ async function boot() {
     shuffle(pts); const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts.flat()), 3));
     star300 = new THREE.Points(geo, new THREE.PointsMaterial({ map: dotTex(), color: 0xffe27a, size: 0.2, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false })); star300.userData.n = pts.length; star300.position.set(0, 2.1, -12); star300.frustumCulled = false; star300.renderOrder = 5; camera.add(star300); }
   hideCutProps(); resize(); toTitle();
-  cam.pos.set(6, 3, 7); cam.look.set(0, 0.9, -3.4); cam.fov = 40;
+  cam.pos.set(7, 3.2, 6); cam.look.set(0, 0.9, -6); cam.fov = 42;
   renderer.compile(scene, camera);
   // If the device can't keep up, quietly step the detail down (sharpness first, then shadows).
   let last = 0, slowAcc = 0, slowN = 0, qLevel = 0;

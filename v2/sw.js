@@ -1,6 +1,6 @@
 /* Gnome Bowling 2.0 service worker: lets the installed game open with no internet.
    Serves from cache first, then quietly refreshes the cache for next time. */
-var CACHE = 'gnome-bowling-2-v1';
+var CACHE = 'gnome-bowling-2-v2';
 var FILES = ['./', 'index.html', 'game.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',
   'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 self.addEventListener('install', function (e) {

@@ -23,7 +23,7 @@ function tree(b, x, z, h, rnd) {
 }
 // gentle hills away from the lane
 export function groundY(x, z) {
-  const dx = Math.max(0, Math.abs(x) - 4.5), dz = Math.max(0, Math.max(z - 5, -15 - z)), d = Math.hypot(dx, dz);
+  const dx = Math.max(0, Math.abs(x) - 4.5), dz = Math.max(0, Math.max(z - 5, -21 - z)), d = Math.hypot(dx, dz);
   const k = Math.min(1, d / 9);
   return GROUND + k * k * (Math.sin(x * 0.21 + 1.3) * Math.cos(z * 0.17) * 1.2 + Math.sin(x * 0.07 + z * 0.09) * 1.6 + 0.6);
 }
@@ -63,9 +63,9 @@ export function buildWorld(scene, renderer, lowQ) {
 
   // ── lights ──
   W.hemi = new THREE.HemisphereLight(0xb4c4ff, 0x6f7fc4, 0.9); scene.add(W.hemi);
-  const sun = new THREE.DirectionalLight(0xe6ecff, 3.3); sun.position.set(7, 13, 5); sun.target.position.set(0, 0, -3.5);
+  const sun = new THREE.DirectionalLight(0xe6ecff, 3.3); sun.position.set(7, 13, 2.5); sun.target.position.set(0, 0, -6);
   sun.castShadow = true; const sm = lowQ ? 1024 : 2048; sun.shadow.mapSize.set(sm, sm);
-  const sc = sun.shadow.camera; sc.left = -7; sc.right = 7; sc.top = 9; sc.bottom = -9; sc.near = 1; sc.far = 40; sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.03; sun.shadow.radius = 3;
+  const sc = sun.shadow.camera; sc.left = -7; sc.right = 7; sc.top = 11.5; sc.bottom = -11.5; sc.near = 1; sc.far = 40; sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.03; sun.shadow.radius = 3;
   scene.add(sun, sun.target); W.sun = sun;
   const fill = new THREE.DirectionalLight(0xfff0e0, 0.55); fill.position.set(-2, 5, 12); scene.add(fill); W.fill = fill;
 
@@ -82,13 +82,15 @@ export function buildWorld(scene, renderer, lowQ) {
   }
   const mm = mb.build({ flatShading: true, roughness: 1 }); mm.castShadow = false; mm.receiveShadow = false; scene.add(mm);
   const tb = new Batch();
-  const fixed = [[-2.6, -11.5, 2.6], [3.4, -10.2, 2.8], [8.6, -14, 5.2], [-10.5, -11, 4.4], [-0.8, -19, 3.6], [2.2, -21, 4.2], [7.2, -8.6, 2.6], [-11, -6, 4], [9.5, -5, 3.6], [-6.8, -6.4, 2.6], [6.9, -5.2, 2.6], [-14, -17, 5], [12, -19, 5.5]];
+  const fixed = [[-2.6, -17, 2.6], [3.4, -15.9, 2.8], [9.4, -19.5, 5.2], [-11.5, -16.5, 4.4], [-0.8, -24.5, 3.6], [2.2, -26.5, 4.2], [8.6, -14.6, 2.8], [-12.5, -7, 4], [12.2, -5, 3.8], [-12, -1, 3.4], [11.6, 1, 3.4], [-15, -22.5, 5], [13, -24.5, 5.5]];
+  // small trees close to the lane (short enough that the camera sees over them)
+  [[-3.6, -2.6, 1.3], [3.9, -4.4, 1.5], [-4.6, -6.2, 1.7], [5.2, -8, 1.4], [-3.4, -8.6, 1.2], [3.6, -0.6, 1.2], [-6.2, -3.4, 1.8], [6.6, -2.2, 1.7], [-5.6, -10.4, 1.6], [4.4, -11.2, 1.3], [-7.6, -8, 1.9], [7.8, -6.4, 1.9], [-4.4, 1.2, 1.4], [5, 2.2, 1.5]].forEach(t => tree(tb, t[0], t[1], t[2], rnd));
   fixed.forEach(t => tree(tb, t[0], t[1], t[2], rnd));
-  for (let i = 0; i < 85; i++) {
+  for (let i = 0; i < 110; i++) {
     const a = rnd() * TAU, d = 13 + rnd() * 50, x = Math.cos(a) * d, z = Math.sin(a) * d - 4;
-    if (Math.abs(x) < 5.5 && z > -24 && z < 12) continue;
-    if (x > -11 && x < -2 && z < -8 && z > -19) continue;       // workshop clearing
-    if (x > 3 && x < 8 && z < -9 && z > -15) continue;         // big tree clearing
+    if (Math.hypot(x, z + 5.5) < 12.5 || (Math.abs(x) < 6 && z > -30 && z < 14)) continue;
+    if (x > -11 && x < -2 && z < -13.5 && z > -24.5) continue;       // workshop clearing
+    if (x > 3 && x < 8 && z < -14.5 && z > -20.5) continue;         // big tree clearing
     tree(tb, x, z, 2.6 + rnd() * 3.8, rnd);
   }
   scene.add(tb.build());
@@ -121,7 +123,7 @@ export function buildWorld(scene, renderer, lowQ) {
     }
     lb.add(G('Sphere', 1, 14, 8), 0xffffff, s * (GU + 0.13), 0.78, C.KICK_Z - kl / 2 + 0.05, 0.17, 0.09, kl / 2 + 0.05);
     // snow banked against the platform
-    lb.add(G('Sphere', 1, 14, 8), 0xf4f8ff, s * (R + 0.25), GROUND, -3.2, 0.5, 0.22, 5.4);
+    lb.add(G('Sphere', 1, 14, 8), 0xf4f8ff, s * (R + 0.25), GROUND, (0.3 + C.PIT_END) / 2, 0.5, 0.22, (0.3 - C.PIT_END) / 2 + 0.7);
   });
   // back wall of logs
   const bz = C.PIT_END - 0.16, bw = R * 2 + 0.5;
@@ -134,7 +136,7 @@ export function buildWorld(scene, renderer, lowQ) {
   lb.add(G('Box', 1, 1, 1), 0x070a18, 0, -0.44, (C.DECK_END + C.PIT_END) / 2, GU * 2, 0.02, C.DECK_END - C.PIT_END);
   lb.add(G('Box', 1, 1, 1), 0x1a2238, 0, -0.25, C.PIT_END - 0.02, GU * 2, 0.5, 0.04);
   // aiming arrows on the ice
-  for (let i = -3; i <= 3; i++) lb.add(G('Cone', 0.05, 0.2, 3), 0x2a5f9a, i * 0.2, 0.004, -1.9 - (3 - Math.abs(i)) * 0.16, 1, 1, 0.08, -Math.PI / 2, 0, 0);
+  for (let i = -3; i <= 3; i++) lb.add(G('Cone', 0.05, 0.2, 3), 0x2a5f9a, i * 0.2, 0.004, -3.4 - (3 - Math.abs(i)) * 0.2, 1, 1, 0.08, -Math.PI / 2, 0, 0);
   const lm = lb.build(); lm.receiveShadow = true; lane.add(lm);
   const spotMat = new THREE.MeshBasicMaterial({ color: 0x2a5a8a, transparent: true, opacity: 0.28, depthWrite: false });
   pinSpots().forEach(s => { const m = new THREE.Mesh(G('Circle', 0.12, 20), spotMat); m.rotation.x = -Math.PI / 2; m.position.set(s.x, 0.004, s.z); lane.add(m); });
@@ -145,7 +147,7 @@ export function buildWorld(scene, renderer, lowQ) {
   strand(-R - 0.2, 1.22, bz + 0.2, 0, 1.2, bz + 0.2, 9, 0.16); strand(0, 1.2, bz + 0.2, R + 0.2, 1.22, bz + 0.2, 9, 0.16);
 
   // ── Santa's workshop ──
-  const ws = new THREE.Group(); ws.position.set(-6.0, GROUND, -13.2); ws.rotation.y = 0.42; scene.add(ws);
+  const ws = new THREE.Group(); ws.position.set(-6.0, GROUND, -18.7); ws.rotation.y = 0.42; scene.add(ws);
   const wb = new Batch();
   wb.add(G('Box', 1, 1, 1), 0x8a3526, 0, 1.3, 0, 5.2, 2.6, 3.8);
   for (let i = 0; i < 6; i++) wb.add(G('Box', 1, 1, 1), 0x6f2a1e, 0, 0.3 + i * 0.42, 1.91, 5.22, 0.03, 0.02);
@@ -169,7 +171,7 @@ export function buildWorld(scene, renderer, lowQ) {
   W.chimney = new THREE.Vector3(...wpt(1.5, 5.0, -0.4));
 
   // ── big Christmas tree with presents ──
-  const TX = 5.6, TZ = -11.8, cb = new Batch();
+  const TX = 5.6, TZ = -17.3, cb = new Batch();
   cb.add(G('Cylinder', 0.22, 0.28, 0.8, 8), 0x4a2e1a, TX, GROUND + 0.4, TZ);
   for (let i = 0; i < 5; i++) { const r = 2.0 * (1 - i * 0.17), yy = GROUND + 0.7 + i * 0.95; cb.add(G('Cone', 1, 1, 12), i % 2 ? 0x1d6b3f : 0x18603a, TX, yy + 0.8, TZ, r, 1.6, r); cb.add(G('Cone', 1, 1, 12), 0xf4f8ff, TX, yy + 1.22, TZ, r * 0.52, 0.8, r * 0.52); }
   [[1.6, 0.5, 0xe63946, 0.5], [-1.4, 0.9, 0x3a86ff, 0.42], [0.4, 1.9, 0x2a9d4a, 0.36], [-0.5, 1.7, 0xffd23f, 0.3], [2.1, -0.5, 0xb565e0, 0.34]].forEach(p => {
@@ -183,7 +185,7 @@ export function buildWorld(scene, renderer, lowQ) {
   const tl = new THREE.PointLight(0xffe0a0, 40, 14, 1.6); tl.position.set(TX - 0.5, 3, TZ + 2.4); scene.add(tl);
 
   // ── North Pole ──
-  const nb = new Batch(), NX = -2.35, NZ = -3.9;
+  const nb = new Batch(), NX = -2.35, NZ = -5.6;
   for (let i = 0; i < 8; i++) nb.add(G('Cylinder', 0.07, 0.07, 0.2, 10), i % 2 ? 0xffffff : 0xe23a3a, NX, GROUND + 0.1 + i * 0.2, NZ);
   nb.add(G('Sphere', 0.13, 14, 10), 0xffd23f, NX, GROUND + 1.72, NZ); nb.add(G('Sphere', 1, 12, 8), 0xf4f8ff, NX, GROUND, NZ, 0.35, 0.12, 0.35);
   const npm = nb.build({ roughness: 0.4 }); scene.add(npm);
@@ -192,7 +194,7 @@ export function buildWorld(scene, renderer, lowQ) {
 
   // ── candy-cane lamp posts along the lane ──
   const pb = new Batch(); W.lamps = [];
-  [[-2.15, -1.8], [2.15, -1.8], [-2.4, -8.2], [2.4, -8.2], [-3.7, 6.5], [3.7, 6.5]].forEach(p => {
+  [[-2.15, -2.2], [2.15, -2.2], [-2.15, -7.4], [2.15, -7.4], [-2.4, -13.7], [2.4, -13.7], [-3.7, 6.5], [3.7, 6.5]].forEach(p => {
     for (let i = 0; i < 9; i++) pb.add(G('Cylinder', 0.045, 0.045, 0.2, 8), i % 2 ? 0xffffff : 0xe23a3a, p[0], GROUND + 0.1 + i * 0.2, p[1]);
     pb.add(G('Box', 1, 1, 1), 0x2b2b2b, p[0], GROUND + 1.84, p[1], 0.2, 0.05, 0.2); pb.add(G('Cone', 0.16, 0.14, 4), 0x2b2b2b, p[0], GROUND + 2.16, p[1], 1, 1, 1, 0, Math.PI / 4);
     const lm2 = mesh(G('Box', 1, 1, 1), glow(0xffd98a), p[0], GROUND + 1.98, p[1], 0.15, 0.22, 0.15); lm2.castShadow = false; scene.add(lm2);
